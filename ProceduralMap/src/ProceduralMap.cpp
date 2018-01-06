@@ -144,7 +144,7 @@ int main()
 		checkKeys();
 		scene->render(camera);
 		if (showInfo) {
-			textRenderer->renderText(("Mem: " + std::to_string(memCounter.WorkingSetSize/(1024*1024)) + "MB").c_str(), -0.99f, 0.95f, 0.0005f, 0.001f);
+			textRenderer->renderText(("Memory: " + std::to_string(memCounter.WorkingSetSize/(1024*1024)) + "MB").c_str(), -0.99f, 0.95f, 0.0005f, 0.001f);
 			textRenderer->renderText(("FPS: " + std::to_string(fps)).c_str(), -0.99f, 0.90f, 0.0005f, 0.001f);
 			textRenderer->renderText(("X: " + std::to_string(camera->x)).c_str(), -0.99f, 0.85f, 0.0005f, 0.001f);
 			textRenderer->renderText(("Y: " + std::to_string(camera->y)).c_str(), -0.99f, 0.80f, 0.0005f, 0.001f);
