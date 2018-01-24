@@ -434,8 +434,8 @@ glm::vec3 Map::getNormalVector(const int i, const int j) const
 void Map::renderMap(const glm::mat4 projectionMatrix, const glm::mat4 cameraSpaceMatrix, const glm::vec3 viewerPosition, const unsigned int mode)
 {
 	shader->use();
-	//checkExpansion(viewerPosition);
-	//checkNewData();
+	checkExpansion(viewerPosition);
+	checkNewData();
 	shader->setUniformValue("cameraSpaceMatrix", cameraSpaceMatrix);
 	shader->setUniformValue("projectionMatrix", projectionMatrix);
 	shader->setUniformValue("viewerPosition", viewerPosition);

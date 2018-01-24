@@ -19,10 +19,10 @@ Shader::Shader(const std::string& vertexShader, const std::string& fragmentShade
 		glAttachShader(programId, fragmentShaderId);
 		glLinkProgram(programId);
 
-		int infoLogLength;
+		int infoLogLength = 0;
 
 		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		if (infoLogLength > 0) {
+		if (infoLogLength > 1) {
 			char* errorMessage = new char[infoLogLength];
 			glGetProgramInfoLog(programId, infoLogLength, NULL, errorMessage);
 			Logger::printError(errorMessage);
@@ -109,20 +109,19 @@ unsigned int Shader::compileShader(const std::string& shaderName, const unsigned
 		return 0;
 	}
 
-	int infoLogLength;
+	int infoLogLength = 0;
 
 	unsigned int shaderId = glCreateShader(shaderType);
 
-	Logger::printInfo("Compiling shader :" + shaderName);
+	Logger::printInfo("Compiling shader: " + shaderName);
 	const char* temp = shaderCode.c_str();
 	glShaderSource(shaderId, 1, &temp , NULL);
 	glCompileShader(shaderId);
 
 	glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-	if (infoLogLength > 0) {
+	if (infoLogLength > 1) {
 		char* errorMessage = new char[infoLogLength];
 		glGetShaderInfoLog(shaderId, infoLogLength, NULL, errorMessage);
-		printf("%s\n", errorMessage);
 		Logger::printError(errorMessage);
 		delete[] errorMessage;
 		glDeleteShader(shaderId);

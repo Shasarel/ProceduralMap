@@ -25,6 +25,7 @@ Window::Window(const int width, const int height, const bool fullscreen, const i
 		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+		glfwWindowHint(GLFW_VISIBLE, false);
 
 		if (fullscreen) {
 			glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -99,4 +100,9 @@ int Window::getWidth()
 int Window::getHeight()
 {
 	return height;
+}
+
+void Window::show()
+{
+	glfwShowWindow(window);
 }

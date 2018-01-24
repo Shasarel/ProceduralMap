@@ -12,6 +12,7 @@ public:
 	void update();
 	int getWidth();
 	int getHeight();
+	void show();
 private:
 	GLFWwindow* window;
 	int width, height;

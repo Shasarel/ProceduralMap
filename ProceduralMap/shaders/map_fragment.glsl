@@ -14,23 +14,23 @@ uniform sampler2D rock;
 uniform sampler2D snow;
 
 vec4 getPhongLight(){
-	vec3 lightPosition = vec3(200000,200000,200000);
-	vec3 lightColor = vec3(1.0,1.0,1.0);
+	vec3 lightPosition = vec3(200000,200000,50000);
+	vec3 lightColor = vec3(1.0,0.9,0.8);
 	
 	
 	vec3 lightDirection = normalize(lightPosition - fragPosition);
 	
 	
-	float ambientStrength = 0.15;
+	float ambientStrength = 0.10;
 	vec3 ambient = ambientStrength * lightColor;
 
 	
-	float diffuseStrenght = 0.6;
+	float diffuseStrenght = 0.8;
 	float diff = clamp(dot(fragNormalVector, lightDirection),0,1);
 	vec3 diffuse = diff * lightColor * diffuseStrenght;
 	
 	float specularStrength = 0.3;
-	int shininess = 4;
+	int shininess = 16;
 	vec3 viewDir = normalize(viewerPosition - fragPosition);
 	vec3 reflectDir = reflect(-lightDirection, fragNormalVector);
 	float spec = pow(clamp(dot(viewDir, reflectDir), 0,1), shininess) * specularStrength;
@@ -53,7 +53,7 @@ vec4 getTexture(){
 	grountHeight = homographicFunction(fragPosition.z / mapHeight,0.64,20);
 	groundTex = mix(groundTex,texture(snow,fragTexCoord), grountHeight);
 	
-	normalTex = homographicFunction(fragNormalVector.z, 0.8, 20);
+	normalTex = homographicFunction(fragNormalVector.z, 0.8,15);
 	groundTex = mix(texture(rock,fragTexCoord),groundTex, normalTex);
 	return groundTex;
 }
@@ -64,6 +64,6 @@ void main()
 	vec4 light = getPhongLight();
 	vec4 tex = getTexture();
 	
-	vec4 fogColor = vec4(0.5,0.5,0.5,1);
+	vec4 fogColor = mix(vec4(0.5,0.5,0.67,1),vec4(0.5,0.5,0.55,1.0), visibility * 2);
     outputColor = mix(fogColor, light * tex,visibility);
 }

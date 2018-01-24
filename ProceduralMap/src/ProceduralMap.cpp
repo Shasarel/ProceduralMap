@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+ï»¿#include <GL/glew.h>
 #include <chrono>
 #include <string>
 #include <Windows.h>
@@ -16,15 +16,15 @@
 
 /*ToDo
 
-Ulepszone oœwietlenie
+Ulepszone oÅ“wietlenie
 algorytmy korozji
 cienie
 
 config z pliku
 
-Mg³a przestrzenna, chmury
-skybox + przesuwaj¹ce siê Ÿród³o œwiat³a
-dzieñ/noc
+MgÂ³a przestrzenna, chmury
+skybox + przesuwajÂ¹ce siÃª Å¸rÃ³dÂ³o Å“wiatÂ³a
+dzieÃ±/noc
 fizyka
 woda
 obiekty 3d(np drzewa, kamienie)
@@ -32,8 +32,8 @@ obiekty 3d(np drzewa, kamienie)
 
 const float MAP_SIZE = 3;
 const float MAP_HEIGHT = 450.0f;
-const int CHUNK_RESOLUTION = 219;//max 255
-const int CHUNK_COUNT = 10;
+const int CHUNK_RESOLUTION = 146;//max 255
+const int CHUNK_COUNT = 15;
 const float ANGLE_SPEED = 0.1f;
 const int MAX_FPS = 6000;
 
@@ -43,6 +43,7 @@ Camera* camera;
 Scene* scene;
 
 bool showInfo = true;
+bool F3pressed = false;
 bool printScreenPressed = false;
 
 bool init() {
@@ -60,10 +61,10 @@ bool init() {
 	scene->loadMap(CHUNK_RESOLUTION, CHUNK_COUNT, MAP_SIZE, MAP_HEIGHT);
 
 	camera = new Camera(window, 20.0f, ANGLE_SPEED);
-	camera->z = 400;
+	camera->z = 500;
 	camera->pitch = -90;
 
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClearColor(0.5f, 0.5f, 0.8f, 1.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -73,24 +74,26 @@ bool init() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glFrontFace(GL_CW);
-
+	window->show();
 	return true;
 }
 
 void checkKeys()
 {
-	if(window->checkKey(GLFW_KEY_F3))
-		showInfo = true;
-
-	if (window->checkKey(GLFW_KEY_F4))
-		showInfo = false;
+	if (window->checkKey(GLFW_KEY_F3) && !F3pressed) {
+		showInfo = !showInfo;
+		F3pressed = true;
+	}
+	if (!window->checkKey(GLFW_KEY_F3) && F3pressed) {
+		F3pressed = false;
+	}
 
 	if (window->checkKey(GLFW_KEY_LEFT_SHIFT))
-		camera->moveSpeed = 400;
+		camera->moveSpeed = 600;
 	else
-		camera->moveSpeed = 20;
+		camera->moveSpeed = 300;
 
-	if (window->checkKey(GLFW_KEY_PRINT_SCREEN) && !printScreenPressed) {
+	if (window->checkKey(GLFW_KEY_F11) && !printScreenPressed) {
 		int width = window->getWidth(), height = window->getHeight();
 
 		std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
@@ -109,7 +112,7 @@ void checkKeys()
 		printScreenPressed = true;
 		delete[] pixels;
 	}
-	if (!window->checkKey(GLFW_KEY_PRINT_SCREEN)) {
+	if (!window->checkKey(GLFW_KEY_PRINT_SCREEN) && printScreenPressed) {
 		printScreenPressed = false;
 	}
 }
@@ -150,6 +153,15 @@ int main()
 			textRenderer->renderText(("Y: " + std::to_string(camera->y)).c_str(), -0.99f, 0.80f, 0.0005f, 0.001f);
 			textRenderer->renderText(("Z: " + std::to_string(camera->z)).c_str(), -0.99f, 0.75f, 0.0005f, 0.001f);
 			textRenderer->renderText(("Dir: " + std::to_string(camera->getDirection())).c_str(), -0.99f, 0.70f, 0.0005f, 0.001f);
+			if(camera->moveSpeed != 600)
+				textRenderer->renderText("Press LEFT_SHIFT to increase speed", -0.99f, -0.80f, 0.0005f, 0.001f);
+			textRenderer->renderText("Press ESC to exit", -0.99f, -0.85f, 0.0005f, 0.001f);
+			textRenderer->renderText("Press F11 to take screenshot", -0.99f, -0.90f, 0.0005f, 0.001f);
+			textRenderer->renderText("Press F3 to hide info", -0.99f, -0.95f, 0.0005f, 0.001f);
+			textRenderer->renderText("Author: Wojciech Urbanczyk", 0.65f, -0.95f, 0.0005f, 0.001f);
+		}
+		else {
+			textRenderer->renderText("Press F3 to show info", -0.99f, -0.95f, 0.0005f, 0.001f);
 		}
 		updates++;
 		window->update();
