@@ -10,13 +10,13 @@ Skybox::Skybox()
 
 
 
-		"textures/skybox/violentdays_ft.tga",
-		"textures/skybox/violentdays_bk.tga",//
+		"textures/skybox/cloudtop_ft.tga",
+		"textures/skybox/cloudtop_bk.tga",//
 
-		"textures/skybox/violentdays_up.tga",//
-		"textures/skybox/violentdays_dn.tga",//
-		"textures/skybox/violentdays_rt.tga",
-		"textures/skybox/violentdays_lf.tga"
+		"textures/skybox/cloudtop_up.tga",//
+		"textures/skybox/cloudtop_dn.tga",//
+		"textures/skybox/cloudtop_rt.tga",
+		"textures/skybox/cloudtop_lf.tga"
 
 
 
