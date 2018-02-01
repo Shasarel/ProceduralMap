@@ -14,8 +14,8 @@ uniform sampler2D rock;
 uniform sampler2D snow;
 
 vec4 getPhongLight(){
-	vec3 lightPosition = vec3(200000,200000,50000);
-	vec3 lightColor = vec3(1.0,0.9,0.8);
+	vec3 lightPosition = vec3(200000,200000,100000);
+	vec3 lightColor = vec3(1.0,0.3,0.0);
 	
 	
 	vec3 lightDirection = normalize(lightPosition - fragPosition);
@@ -25,7 +25,7 @@ vec4 getPhongLight(){
 	vec3 ambient = ambientStrength * lightColor;
 
 	
-	float diffuseStrenght = 0.8;
+	vec3 diffuseStrenght = vec3(1,1,1);
 	float diff = clamp(dot(fragNormalVector, lightDirection),0,1);
 	vec3 diffuse = diff * lightColor * diffuseStrenght;
 	
@@ -64,6 +64,6 @@ void main()
 	vec4 light = getPhongLight();
 	vec4 tex = getTexture();
 	
-	vec4 fogColor = mix(vec4(0.5,0.5,0.67,1),vec4(0.5,0.5,0.55,1.0), visibility * 2);
+	vec4 fogColor = vec4(1.0,0.3,0.0,1.0);
     outputColor = mix(fogColor, light * tex,visibility);
 }

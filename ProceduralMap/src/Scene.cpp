@@ -7,6 +7,7 @@ Scene::Scene(const float windowRatio):
 {
 	Logger::printInfo("Creating scene");
 	projectionMatrix = glm::perspective(glm::radians(75.0f), windowRatio, 0.1f, 5000.0f);
+
 }
 
 Scene::~Scene()
@@ -20,6 +21,7 @@ void Scene::loadMap(const unsigned int chunkResolution, const unsigned int chunk
 	if (map != nullptr)
 		delete map;
 	map = new Map(chunkResolution, chunkCount, mapSize, mapHeight);
+	skybox = new Skybox();
 }
 
 void Scene::render(Camera* camera)
@@ -31,6 +33,8 @@ void Scene::render(Camera* camera)
 	glm::mat4 cameraSpaceMatrix = rotateMatrix * translationMatrix;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	skybox->render(projectionMatrix, rotateMatrix);
 
 	if(map != nullptr)
 		map->renderMap(projectionMatrix, cameraSpaceMatrix, cameraPosition, GL_TRIANGLES);

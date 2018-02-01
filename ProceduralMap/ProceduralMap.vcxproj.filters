@@ -48,6 +48,12 @@
     <ClInclude Include="src\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SimplexNoise.cpp">
@@ -83,6 +89,12 @@
     <ClCompile Include="src\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\map_fragment.glsl">
@@ -95,6 +107,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\text_vertex.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox_fragment.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox_vertex.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

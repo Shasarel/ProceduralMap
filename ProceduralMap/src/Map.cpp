@@ -18,6 +18,7 @@ Map::Map(const unsigned int chunkResolution, const unsigned int chunkCount, cons
 	expandDirection(-1),
 	expansionAvailable(true)
 {
+	Entity::init();
 	Logger::printInfo("Creating map");
 	if (chunkResolution > 255) {
 		Logger::printWarning("Chunk resolution too big. Set to 255");
@@ -38,16 +39,13 @@ Map::Map(const unsigned int chunkResolution, const unsigned int chunkCount, cons
 			indices[n++] = (i + 1) * chunkResolution + j;
 		}
 	}
-	VertexArrayObject* temp = new VertexArrayObject();
-	temp->createIndices(indicesCount, indices);
-	indicesBufferId = temp->getIndicesBufferId();
-	delete temp;
+	indicesBufferId = VertexArrayObject::createIndicesBuffer(indicesCount, indices);
 
 	dataToVao = new float*[chunkCount];
 
-	chunks = new VertexArrayObject**[chunkCount];
+	chunks = new Entity**[chunkCount];
 	for (unsigned int i = 0;i < chunkCount;i++) {
-		chunks[i] = new VertexArrayObject*[chunkCount];
+		chunks[i] = new Entity*[chunkCount];
 	}
 	heightMap = new float*[mapLength];
 	for (unsigned int i = 0; i < mapLength; i++) {
@@ -57,7 +55,7 @@ Map::Map(const unsigned int chunkResolution, const unsigned int chunkCount, cons
 		}
 	}
 	n = 0;
-	textureCoords = new float[chunkResolution * chunkResolution * 2];
+	textureCoords = new float[chunkResolution * chunkResolution * 3];
 	for (unsigned int i = 0;i < chunkResolution;i++) {
 		for (unsigned int j = 0;j < chunkResolution;j++) {
 			textureCoords[n++] = j * (float)(70) / chunkResolution;
@@ -89,14 +87,14 @@ Map::~Map()
 	cv.notify_one();
 	mapThread.join();
 
-	TextureManager::getTextureManager()->deactiveTexture("rock");
-	TextureManager::getTextureManager()->deactiveTexture("grass");
-	TextureManager::getTextureManager()->deactiveTexture("snow");
+	TextureManager::getTextureManager()->deleteTexture("rock");
+	TextureManager::getTextureManager()->deleteTexture("grass");
+	TextureManager::getTextureManager()->deleteTexture("snow");
 	
 	delete shader;
 	delete[] textureCoords;
 
-	chunks[0][0]->deleteIndices();
+	VertexArrayObject::deleteIndicesBuffer(indicesBufferId);
 	for (unsigned int i = 0;i < chunkCount;i++) {
 		for (unsigned int j = 0;j < chunkCount;j++) {
 			delete chunks[i][j];
@@ -114,119 +112,6 @@ Map::~Map()
 
 void Map::hydrologicErosion()
 {
-	float rainAmount = 2;
-	float solubility = 4;
-	float evaporation = 0.1f;
-	float capacity = 1;
-
-	float bigSmall = 0;
-//	int bigi;
-	//int bigj;
-
-	waterMap = new float*[mapLength];
-	float** sedimentMap = new float*[mapLength];
-	for (unsigned int i = 0; i < mapLength; i++) {
-		waterMap[i] = new float[mapLength];
-		sedimentMap[i] = new float[mapLength];
-		for (unsigned int j = 0; j < mapLength; j++) {
-			waterMap[i][j] = 0;
-			sedimentMap[i][j] = 0;
-		}
-	}
-	for (int x = 0;x < 10;x++) {
-		for (unsigned int i = 0; i < mapLength; i++) {
-			for (unsigned int j = 0; j < mapLength; j++) {
-				waterMap[i][j] +=rainAmount;
-				sedimentMap[i][j] += solubility;
-				heightMap[i][j] -= solubility;
-			}
-		}
-		for (unsigned int j = 0; j < mapLength; j++) {
-			for (unsigned int i = 0; i < mapLength; i++) {
-				if (i != 0 && i != mapLength - 1 && j != 0 && j != mapLength - 1) {
-					float smallestH = 9999;
-					int smallestI = i;
-					int smallestJ = j;
-
-					if (heightMap[i - 1][j - 1] + waterMap[i - 1][j - 1] < smallestH) {
-						smallestH = heightMap[i - 1][j - 1] + waterMap[i - 1][j - 1];
-						smallestI = i - 1;
-						smallestJ = j - 1;
-					}
-					if (heightMap[i + 1][j + 1] + waterMap[i + 1][j + 1] < smallestH) {
-						smallestH = heightMap[i + 1][j + 1] + waterMap[i + 1][j + 1];
-						smallestI = i + 1;
-						smallestJ = j + 1;
-					}
-
-					if (heightMap[i - 1][j + 1] + waterMap[i - 1][j + 1] < smallestH) {
-						smallestH = heightMap[i - 1][j + 1] + waterMap[i - 1][j + 1];
-						smallestI = i - 1;
-						smallestJ = j + 1;
-					}
-					if (heightMap[i + 1][j - 1] + waterMap[i + 1][j - 1] < smallestH) {
-						smallestH = heightMap[i + 1][j - 1] + waterMap[i + 1][j - 1];
-						smallestI = i + 1;
-						smallestJ = j - 1;
-					}
-					
-					if (heightMap[i][j + 1] + waterMap[i][j + 1] < smallestH) {
-						smallestH = heightMap[i][j + 1] + waterMap[i][j + 1];
-						smallestI = i;
-						smallestJ = j + 1;
-					}
-
-					if (heightMap[i][j - 1] + waterMap[i][j - 1] < smallestH) {
-						smallestH = heightMap[i][j - 1] + waterMap[i][j - 1];
-						smallestI = i;
-						smallestJ = j - 1;
-					}
-					if (heightMap[i - 1][j] + waterMap[i - 1][j] < smallestH) {
-						smallestH = heightMap[i - 1][j] + waterMap[i - 1][j];
-						smallestI = i - 1;
-						smallestJ = j;
-					}
-					
-					if (heightMap[i + 1][j] + waterMap[i + 1][j] < smallestH) {
-						smallestH = heightMap[i + 1][j] + waterMap[i + 1][j];
-						smallestI = i + 1;
-						smallestJ = j;
-					}
-					
-					
-
-					float heightDiff = heightMap[i][j] + waterMap[i][j] - smallestH;
-					if (heightDiff > 0) {
-						if (heightDiff >= waterMap[i][j]) {
-							waterMap[smallestI][smallestJ] += waterMap[i][j];
-							waterMap[i][j] = 0;
-							sedimentMap[smallestI][smallestJ] += sedimentMap[i][j];
-							sedimentMap[i][j] = 0;
-						}
-						else {
-							float waterFlow = (waterMap[i][j] - heightDiff) / 2.0f;
-							float s = sedimentMap[i][j] * waterFlow/waterMap[i][j];
-							waterMap[smallestI][smallestJ] += waterFlow;
-							waterMap[i][j] -= waterFlow;
-							sedimentMap[smallestI][smallestJ] += s;
-							sedimentMap[i][j] -= s;
-						}
-					}
-
-				}
-			}
-		}
-			for (unsigned int i = 0; i < mapLength; i++) {
-				for (unsigned int j = 0; j < mapLength; j++) {
-					waterMap[i][j] -= waterMap[i][j] * evaporation;
-					float overSediment = sedimentMap[i][j] - waterMap[i][j] * capacity;
-					if (overSediment > 0) {
-						sedimentMap[i][j] -= overSediment;
-						heightMap[i][j] += overSediment;
-					}
-				}
-			}
-	}
 }
 
 void Map::mapThreadLoop()
@@ -325,18 +210,9 @@ void Map::checkNewData()
 	}
 }
 
-VertexArrayObject* Map::createChunk(const float* data) const
+Entity* Map::createChunk(const float* data) const
 {
-	unsigned int chunkVertices = chunkResolution * chunkResolution;
-
-	VertexArrayObject* temp = new VertexArrayObject();
-	temp->loadIndices(indicesCount, indicesBufferId);
-	temp->activeAttribute(0, 3, 0);
-	temp->activeAttribute(1, 3, (void*)(chunkVertices * sizeof(float) * 3));
-	temp->activeAttribute(2, 2, (void*)(chunkVertices * sizeof(float) * 6));
-	temp->setData(chunkVertices * 8 * sizeof(float), data);
-	delete data;
-	return temp;
+	return new Entity(data, chunkResolution * chunkResolution, indicesBufferId, indicesCount);
 }
 
 float* Map::createChunkData(const unsigned int x, const unsigned int y) const

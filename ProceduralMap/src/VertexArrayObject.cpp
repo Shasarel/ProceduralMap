@@ -16,17 +16,16 @@ VertexArrayObject::~VertexArrayObject()
 	glDeleteVertexArrays(1, &objectId);
 }
 
-void VertexArrayObject::createIndices(const unsigned int indicesCount, const unsigned short* indices)
+unsigned int VertexArrayObject::createIndicesBuffer(const unsigned int indicesCount, const unsigned short* indices)
 {
-	this->indicesCount = indicesCount;
+	unsigned int indicesBufferId = 0;
 	glGenBuffers(1, &indicesBufferId);
-	glBindVertexArray(objectId);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesCount * sizeof(unsigned short), indices, GL_STATIC_DRAW);
-	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesCount * sizeof(unsigned short), indices, GL_STATIC_DRAW);
+	return indicesBufferId;
 }
 
-void VertexArrayObject::deleteIndices()
+void VertexArrayObject::deleteIndicesBuffer(const unsigned int indicesBufferId)
 {
 	glDeleteBuffers(1, &indicesBufferId);
 }
@@ -37,7 +36,6 @@ void VertexArrayObject::loadIndices(const unsigned int indicesCount, const unsig
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferId);
 	glBindVertexArray(0);
 	this->indicesCount = indicesCount;
-	this->indicesBufferId = indicesBufferId;
 }
 
 void VertexArrayObject::activeAttribute(const unsigned int location, const unsigned int count, const void* bufferOffset)
@@ -55,16 +53,6 @@ void VertexArrayObject::setData(const unsigned int size, const float * data)
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
-
-unsigned int VertexArrayObject::getIndicesBufferId()
-{
-	return indicesBufferId;
-}
-
-unsigned int VertexArrayObject::getIndicesCount()
-{
-	return indicesCount;
-}
 
 void VertexArrayObject::render(const unsigned int mode)
 {

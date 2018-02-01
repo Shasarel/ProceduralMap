@@ -28,7 +28,8 @@ TextRenderer::TextRenderer()
 			textIndices[5] = 3;
 
 			textVao = new VertexArrayObject();
-			textVao->createIndices(6, textIndices);
+			indicesBufferId = VertexArrayObject::createIndicesBuffer(6, textIndices);
+			textVao->loadIndices(6 ,indicesBufferId);
 			delete textIndices;
 			textVao->activeAttribute(0, 2, 0);
 			textVao->activeAttribute(1, 2, (void*)(8 * sizeof(float)));
@@ -67,6 +68,7 @@ TextRenderer::TextRenderer()
 
 TextRenderer::~TextRenderer()
 {
+	VertexArrayObject::deleteIndicesBuffer(indicesBufferId);
 	delete textVao;
 	delete shader;
 }

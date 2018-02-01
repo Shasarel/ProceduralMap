@@ -18,4 +18,5 @@ private:
 	Character charTab[256];
 	Shader * shader;
 	VertexArrayObject* textVao;
+	unsigned int indicesBufferId;
 };

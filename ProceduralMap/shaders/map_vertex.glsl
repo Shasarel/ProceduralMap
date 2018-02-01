@@ -11,7 +11,7 @@ out vec3 fragNormalVector;
 smooth out vec3 fragPosition;
 out float visibility;
 
-const float fogDensity = 0.0005;
+const float fogDensity = 0.0004;
 const float gradient = 3;
 
 void main(){

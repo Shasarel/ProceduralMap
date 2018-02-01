@@ -69,6 +69,45 @@ void TextureManager::addTexture(const std::string textureName, const std::string
 	textures[textureName] = tex;
 }
 
+void TextureManager::addCubeTexture(const std::string textureName, const std::string textureLocation[6])
+{
+	Logger::printInfo("Loading texture: " + textureName);
+	if (getTextureLocation(textureName) != -1)
+	{
+		Logger::printWarning("Texture already exist. Overriding: " + textureName);
+		deleteTexture(textureName);
+	}
+
+	unsigned int tex;
+
+	glGenTextures(1, &tex);
+	glActiveTexture(GL_TEXTURE31);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	textures[textureName] = tex;
+
+	for (int i = 0; i < 6; i++) {
+
+		int width, height, nrChannels;
+		unsigned char* data = stbi_load(textureLocation[i].c_str(), &width, &height, &nrChannels, 0);
+
+		if (data == 0)
+		{
+			Logger::printError("Unable to load texture: " + textureName + ", location: " + textureLocation[i]);
+		}
+		else {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		}
+
+		stbi_image_free(data);
+	}
+}
+
 void TextureManager::addFontTexture(const std::string textureName, const unsigned int width, const unsigned int height, const unsigned char* data)
 {
 	unsigned int tex;
@@ -100,7 +139,7 @@ void TextureManager::addFontTexture(const std::string textureName, const unsigne
 void TextureManager::deleteTexture(const std::string textureName)
 {
 	const int textureLocation = getTextureLocation(textureName);
-
+	this->deactiveTexture(textureName);
 	if (textureLocation != -1) 
 	{
 		const unsigned int uTextureLocation = textureLocation;
@@ -108,7 +147,7 @@ void TextureManager::deleteTexture(const std::string textureName)
 	}
 }
 
-void TextureManager::activeTexture(const std::string textureName)
+void TextureManager::activeTexture(const std::string textureName, const unsigned int textureType)
 {
 	int textureActiveSlot = getActiveSlot(textureName);
 	if (textureActiveSlot != -1)
@@ -124,7 +163,7 @@ void TextureManager::activeTexture(const std::string textureName)
 				if (textureActiveSlots[i] == 0) {
 					textureActiveSlots[i] = textureLocation;
 					glActiveTexture(GL_TEXTURE0 + i);
-					glBindTexture(GL_TEXTURE_2D, textureLocation);
+					glBindTexture(textureType, textureLocation);
 					break;
 				}
 			}

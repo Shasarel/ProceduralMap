@@ -6,6 +6,7 @@
 #include <thread>
 #include <condition_variable>
 #include <mutex>
+#include "Entity.h"
 
 class Map {
 public:
@@ -17,7 +18,7 @@ private:
 	std::thread mapThread;
 	std::condition_variable cv;
 	std::mutex mtx;
-	VertexArrayObject*** chunks;
+	Entity*** chunks;
 	SimplexNoise* noise;
 	Shader* shader;
 	unsigned int chunkResolution;
@@ -44,7 +45,7 @@ private:
 	void checkNewData();
 	void expandMap();
 
-	VertexArrayObject* createChunk(const float* data) const;
+	Entity* createChunk(const float* data) const;
 	float* createChunkData(const unsigned int x, const unsigned int y) const;
 	glm::vec3 getNormalVector(const int i, const int j) const;
 };

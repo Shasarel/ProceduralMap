@@ -9,9 +9,10 @@ public:
 
 	~TextureManager();
 	void addTexture(const std::string textureName, const std::string textureLocation);
+	void addCubeTexture(const std::string textureName, const std::string textureLocation[6]);
 	void addFontTexture(const std::string textureName, const unsigned int width, const unsigned int height, const unsigned char* data);
 	void deleteTexture(const std::string textureName);
-	void activeTexture(const std::string textureName);
+	void activeTexture(const std::string textureName, const unsigned int textureType = 0x0DE1);
 	void deactiveTexture(const std::string textureName);
 	int getTextureActiveSlot(const std::string textureName);
 

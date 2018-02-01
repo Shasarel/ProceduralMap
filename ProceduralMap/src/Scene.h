@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include <glm\glm.hpp>
 #include "Map.h"
+#include "Skybox.h"
 class Scene{
 public:
 	Scene(const float windowRatio);
@@ -11,4 +12,5 @@ public:
 private:
 	glm::mat4 projectionMatrix;
 	Map* map;
+	Skybox* skybox;
 };
